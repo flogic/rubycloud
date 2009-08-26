@@ -225,4 +225,43 @@ describe RubyCloud::Linode do
       @linode.stop(:instance => 123).should == shutdown_data
     end
   end
+  
+  it 'should be able to delete an instance' do
+    @linode.should.respond_to(:delete)
+  end
+  
+  describe 'deleting an instance' do
+    before do
+      # this is done in the provider's "linode" namespace
+      @linode_api = Object.new
+      @linode_api.stub!(:delete)
+      @linode.provider.stub!(:linode).and_return(@linode_api)
+    end
+    
+    it 'should accept an instance ID' do
+      lambda { @linode.delete(:instance => 5) }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should require an instance ID' do
+      lambda { @linode.delete }.should.raise(ArgumentError)
+    end
+    
+    it 'should delegate to the delete for the given linode ID' do
+      linode_id = 38
+      @linode_api.should.receive(:delete).with('LinodeID' => linode_id)
+      @linode.delete(:instance => linode_id)
+    end
+    
+    it 'should include any additional arguments when calling delete' do
+      linode_id = 38
+      @linode_api.should.receive(:delete).with('LinodeID' => linode_id, 'foo' => 'bar')
+      @linode.delete(:instance => linode_id, 'foo' => 'bar')      
+    end
+    
+    it 'should return the delete result' do
+      delete_data = 'delete data'
+      @linode_api.stub!(:delete).and_return(delete_data)
+      @linode.delete(:instance => 123).should == delete_data
+    end
+  end
 end
