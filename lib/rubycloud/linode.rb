@@ -12,4 +12,8 @@ class RubyCloud::Linode
   def list(args = {})
     provider.linode.list(args)
   end
+  
+  def allocate(args = {})
+    provider.linode.create(args)
+  end
 end

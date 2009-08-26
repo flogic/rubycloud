@@ -73,4 +73,42 @@ describe RubyCloud::Linode do
       @linode.list.should == list_data
     end
   end
+  
+  it 'should be able to allocate an instance' do
+    @linode.should.respond_to(:allocate)
+  end
+  
+  describe 'allocating an instance' do
+    before do
+      # this is done in the provider's "linode" namespace
+      @linode_api = Object.new
+      @linode_api.stub!(:create)
+      @linode.provider.stub!(:linode).and_return(@linode_api)
+    end
+    
+    it 'should accept hash arguments' do
+      lambda { @linode.allocate(:one => 2) }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should not require hash arguments' do
+      lambda { @linode.allocate }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should delegate to the stored provider' do
+      args = { :a => 'bee', :c => 0x0d }
+      @linode_api.should.receive(:create).with(args)
+      @linode.allocate(args)
+    end
+    
+    it 'should pass an empty hash to the stored provider if no arguments given' do
+      @linode_api.should.receive(:create).with({})
+      @linode.allocate
+    end
+    
+    it 'should return the provider create result' do
+      create_data = 'create data'
+      @linode_api.stub!(:create).and_return(create_data)
+      @linode.allocate.should == create_data
+    end
+  end
 end
