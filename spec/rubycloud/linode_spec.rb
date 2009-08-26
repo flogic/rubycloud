@@ -30,4 +30,32 @@ describe RubyCloud::Linode do
       RubyCloud::Linode.new(:api_key => @api_key).provider.api_key.should == @api_key
     end
   end
+  
+  before do
+    @api_key = 'some_secret_key'
+    @linode = RubyCloud::Linode.new(:api_key => @api_key)
+  end
+  
+  it 'should list instances' do
+    @linode.should.respond_to(:list)
+  end
+  
+  describe 'listing instances' do
+    before do
+      # this is done in the provider's "linode" namespace
+      @linode_api = Object.new
+      @linode.provider.stub!(:linode).and_return(@linode_api)
+    end
+    
+    it 'should delegate to the stored provider' do
+      @linode_api.should.receive(:list)
+      @linode.list
+    end
+    
+    it 'should return the provider list result' do
+      list_data = 'list data'
+      @linode_api.stub!(:list).and_return(list_data)
+      @linode.list.should == list_data
+    end
+  end
 end
