@@ -44,11 +44,26 @@ describe RubyCloud::Linode do
     before do
       # this is done in the provider's "linode" namespace
       @linode_api = Object.new
+      @linode_api.stub!(:list)
       @linode.provider.stub!(:linode).and_return(@linode_api)
+      @linode_id = 5
+    end
+    
+    it 'should accept a linode id' do
+      lambda { @linode.list(:linode_id => @linode_id) }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should not require a linode id' do
+      lambda { @linode.list }.should.not.raise(ArgumentError)
     end
     
     it 'should delegate to the stored provider' do
-      @linode_api.should.receive(:list)
+      @linode_api.should.receive(:list).with(:linode_id => @linode_id)
+      @linode.list(:linode_id => @linode_id)
+    end
+    
+    it 'should pass an empty hash to the stored provider if no linode_id given' do
+      @linode_api.should.receive(:list).with({})
       @linode.list
     end
     

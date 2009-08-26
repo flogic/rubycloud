@@ -9,7 +9,7 @@ class RubyCloud::Linode
     @provider = Linode.new(:api_key => @api_key)
   end
   
-  def list
-    provider.linode.list
+  def list(args = {})
+    provider.linode.list(args)
   end
 end
