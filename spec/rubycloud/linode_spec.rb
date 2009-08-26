@@ -264,4 +264,43 @@ describe RubyCloud::Linode do
       @linode.delete(:instance => 123).should == delete_data
     end
   end
+  
+  it 'should be able to restart an instance' do
+    @linode.should.respond_to(:restart)
+  end
+  
+  describe 'restarting an instance' do
+    before do
+      # this is done in the provider's "linode" namespace
+      @linode_api = Object.new
+      @linode_api.stub!(:reboot)
+      @linode.provider.stub!(:linode).and_return(@linode_api)
+    end
+    
+    it 'should accept an instance ID' do
+      lambda { @linode.restart(:instance => 5) }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should require an instance ID' do
+      lambda { @linode.restart }.should.raise(ArgumentError)
+    end
+    
+    it 'should delegate to the reboot for the given linode ID' do
+      linode_id = 38
+      @linode_api.should.receive(:reboot).with('LinodeID' => linode_id)
+      @linode.restart(:instance => linode_id)
+    end
+    
+    it 'should include any additional arguments when calling reboot' do
+      linode_id = 38
+      @linode_api.should.receive(:reboot).with('LinodeID' => linode_id, 'foo' => 'bar')
+      @linode.restart(:instance => linode_id, 'foo' => 'bar')      
+    end
+    
+    it 'should return the reboot result' do
+      reboot_data = 'reboot data'
+      @linode_api.stub!(:reboot).and_return(reboot_data)
+      @linode.restart(:instance => 123).should == reboot_data
+    end
+  end
 end
