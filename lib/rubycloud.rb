@@ -5,4 +5,5 @@ class RubyCloud
   end
 end
 
+Dir['vendor/*'].each { |dir|  $:.unshift(File.join(dir, 'lib')) }
 require 'rubycloud/linode'

@@ -21,5 +21,13 @@ describe RubyCloud::Linode do
     it 'should store the API key' do
       RubyCloud::Linode.new(:api_key => @api_key).api_key.should == @api_key
     end
+    
+    it 'should create a provider' do
+      RubyCloud::Linode.new(:api_key => @api_key).provider.should.be.instance_of(::Linode)
+    end
+    
+    it 'should use the given API key for the stored provider' do
+      RubyCloud::Linode.new(:api_key => @api_key).provider.api_key.should == @api_key
+    end
   end
 end
