@@ -16,4 +16,9 @@ class RubyCloud::Linode
   def allocate(args = {})
     provider.linode.create(args)
   end
+  
+  def details(args = {})
+    raise ArgumentError, ":instance is required" unless args[:instance]
+    list(:linode_id => args[:instance])
+  end
 end

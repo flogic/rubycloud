@@ -111,4 +111,34 @@ describe RubyCloud::Linode do
       @linode.allocate.should == create_data
     end
   end
+  
+  it 'should be able to get details for an instance' do
+    @linode.should.respond_to(:details)
+  end
+  
+  describe 'getting details for an instance' do
+    before do
+      @linode.stub!(:list)
+    end
+    
+    it 'should accept an instance ID' do
+      lambda { @linode.details(:instance => 5) }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should require an instance ID' do
+      lambda { @linode.details }.should.raise(ArgumentError)
+    end
+    
+    it 'should delegate to the list for the given linode ID' do
+      linode_id = 38
+      @linode.should.receive(:list).with(:linode_id => linode_id)
+      @linode.details(:instance => linode_id)
+    end
+    
+    it 'should return the list result' do
+      details_data = 'details data'
+      @linode.stub!(:list).and_return(details_data)
+      @linode.details(:instance => 123).should == details_data
+    end
+  end
 end
