@@ -141,4 +141,44 @@ describe RubyCloud::Linode do
       @linode.details(:instance => 123).should == details_data
     end
   end
+  
+  
+  it 'should be able to start an instance' do
+    @linode.should.respond_to(:start)
+  end
+  
+  describe 'starting an instance' do
+    before do
+      # this is done in the provider's "linode" namespace
+      @linode_api = Object.new
+      @linode_api.stub!(:boot)
+      @linode.provider.stub!(:linode).and_return(@linode_api)
+    end
+    
+    it 'should accept an instance ID' do
+      lambda { @linode.start(:instance => 5) }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should require an instance ID' do
+      lambda { @linode.start }.should.raise(ArgumentError)
+    end
+    
+    it 'should delegate to the boot for the given linode ID' do
+      linode_id = 38
+      @linode_api.should.receive(:boot).with('LinodeID' => linode_id)
+      @linode.start(:instance => linode_id)
+    end
+    
+    it 'should include any additional arguments when calling boot' do
+      linode_id = 38
+      @linode_api.should.receive(:boot).with('LinodeID' => linode_id, 'foo' => 'bar')
+      @linode.start(:instance => linode_id, 'foo' => 'bar')      
+    end
+    
+    it 'should return the boot result' do
+      boot_data = 'boot data'
+      @linode_api.stub!(:boot).and_return(boot_data)
+      @linode.start(:instance => 123).should == boot_data
+    end
+  end
 end

@@ -21,4 +21,10 @@ class RubyCloud::Linode
     raise ArgumentError, ":instance is required" unless args[:instance]
     list('LinodeID' => args[:instance])
   end
+  
+  def start(args = {})
+    raise ArgumentError, ":instance is required" unless args[:instance]
+    args['LinodeID'] = args.delete(:instance)
+    provider.linode.boot(args)    
+  end
 end
