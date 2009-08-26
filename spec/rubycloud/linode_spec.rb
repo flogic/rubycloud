@@ -148,7 +148,6 @@ describe RubyCloud::Linode do
     end
   end
   
-  
   it 'should be able to start an instance' do
     @linode.should.respond_to(:start)
   end
@@ -185,6 +184,45 @@ describe RubyCloud::Linode do
       boot_data = 'boot data'
       @linode_api.stub!(:boot).and_return(boot_data)
       @linode.start(:instance => 123).should == boot_data
+    end
+  end
+  
+  it 'should be able to stop an instance' do
+    @linode.should.respond_to(:stop)
+  end
+  
+  describe 'stopping an instance' do
+    before do
+      # this is done in the provider's "linode" namespace
+      @linode_api = Object.new
+      @linode_api.stub!(:shutdown)
+      @linode.provider.stub!(:linode).and_return(@linode_api)
+    end
+    
+    it 'should accept an instance ID' do
+      lambda { @linode.stop(:instance => 5) }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should require an instance ID' do
+      lambda { @linode.stop }.should.raise(ArgumentError)
+    end
+    
+    it 'should delegate to the shutdown for the given linode ID' do
+      linode_id = 38
+      @linode_api.should.receive(:shutdown).with('LinodeID' => linode_id)
+      @linode.stop(:instance => linode_id)
+    end
+    
+    it 'should include any additional arguments when calling shutdown' do
+      linode_id = 38
+      @linode_api.should.receive(:shutdown).with('LinodeID' => linode_id, 'foo' => 'bar')
+      @linode.stop(:instance => linode_id, 'foo' => 'bar')      
+    end
+    
+    it 'should return the shutdown result' do
+      shutdown_data = 'shutdown data'
+      @linode_api.stub!(:shutdown).and_return(shutdown_data)
+      @linode.stop(:instance => 123).should == shutdown_data
     end
   end
 end

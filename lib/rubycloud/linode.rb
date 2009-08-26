@@ -28,4 +28,10 @@ class RubyCloud::Linode
     args['LinodeID'] = args.delete(:instance)
     provider.linode.boot(args)    
   end
+  
+  def stop(args = {})
+    raise ArgumentError, ":instance is required" unless args[:instance]
+    args['LinodeID'] = args.delete(:instance)
+    provider.linode.shutdown(args)    
+  end
 end
