@@ -134,6 +134,12 @@ describe RubyCloud::Linode do
       @linode.should.receive(:list).with('LinodeID' => linode_id)
       @linode.details(:instance => linode_id)
     end
+
+    it 'should include any additional arguments when calling list' do
+      linode_id = 38
+      @linode.should.receive(:list).with('LinodeID' => linode_id, 'foo' => 'bar')
+      @linode.details(:instance => linode_id, 'foo' => 'bar')
+    end
     
     it 'should return the list result' do
       details_data = 'details data'
