@@ -42,4 +42,55 @@ describe RubyCloud::EC2 do
       RubyCloud::EC2.new(@credentials)
     end
   end
+  
+  it 'should list instances' do
+    RubyCloud::EC2.new(:access_key_id => 'c0ffee', 
+                       :secret_access_key => 'beef99').should.respond_to(:list)
+  end
+  
+  describe 'listing instances' do
+    before do
+      # this is done in the driver's "aws::ec2" namespace
+      @ec2_api = Object.new
+      @ec2_api.stub!(:describe_instances)
+      
+      @ec2 = RubyCloud::EC2.new(:access_key_id => 'c0ffee', 
+                                :secret_access_key => 'beef99')
+      @ec2.stub!(:driver).and_return(@ec2_api)
+    end
+    
+    it 'should accept hash argument with instance' do
+      lambda { @ec2.list(:instance => 'foo') }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should not require arguments' do
+      lambda { @ec2.list() }.should.not.raise(ArgumentError)
+    end
+    
+    it 'should delegate to the driver correctly when no arguments provided' do
+      @ec2.driver.should.receive(:describe_instances).with({})
+      @ec2.list()
+    end
+    
+    it 'should delegate to the driver correctly when one instance id provided' do
+      @actual_args = {:instance => 1}
+      @expected_args = {:instance_id => [1]}
+      @ec2.driver.should.receive(:describe_instances).with(@expected_args)
+      @ec2.list(@actual_args)
+    end
+
+    it 'should delegate to the driver correctly when multiple instance ids provided' do
+      @actual_args = {:instance => [1, 2, 3]}
+      @expected_args = {:instance_id => [1, 2, 3]}
+      @ec2.driver.should.receive(:describe_instances).with(@expected_args)
+      @ec2.list(@actual_args)
+    end
+    
+    it 'should return the driver list result' do
+      list_data = 'list data'
+      @ec2_api.stub!(:describe_instances).and_return(list_data)
+      @ec2.list.should == list_data
+    end
+  end
+  
 end

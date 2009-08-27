@@ -9,4 +9,10 @@ class RubyCloud::EC2
     @access_key_id, @secret_access_key = options[:access_key_id], options[:secret_access_key]
     @driver = AWS::EC2::Base.new(options)
   end
+  
+  def list(options={})
+    driver_options = {}
+    driver_options[:instance_id] = Array(options[:instance]) if options[:instance]
+    driver.describe_instances(driver_options)
+  end
 end
