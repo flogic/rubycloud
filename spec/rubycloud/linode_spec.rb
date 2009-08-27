@@ -29,6 +29,11 @@ describe RubyCloud::Linode do
     it 'should use the given API key for the stored driver' do
       RubyCloud::Linode.new(:api_key => @api_key).driver.api_key.should == @api_key
     end
+    
+    it 'should pass any other arguments when initializing the stored driver' do
+      Linode.should.receive(:new).with(:api_key => @api_key, :foo => :bar)
+      RubyCloud::Linode.new(:api_key => @api_key, :foo => :bar)
+    end
   end
   
   before do

@@ -6,7 +6,7 @@ class RubyCloud::Linode
   def initialize(args)
     raise ArgumentError, ':api_key is required' unless args[:api_key]
     @api_key = args[:api_key]
-    @driver = Linode.new(:api_key => @api_key)
+    @driver = Linode.new(args)
   end
   
   def list(args = {})
