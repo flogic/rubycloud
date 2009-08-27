@@ -15,4 +15,8 @@ class RubyCloud::EC2
     driver_options[:instance_id] = Array(options[:instance]) if options[:instance]
     driver.describe_instances(driver_options)
   end
+  
+  def allocate(options={})
+    driver.run_instances(options)
+  end
 end

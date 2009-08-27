@@ -92,5 +92,33 @@ describe RubyCloud::EC2 do
       @ec2.list.should == list_data
     end
   end
+
+  it 'should be able to allocate an instance' do
+    RubyCloud::EC2.new(:access_key_id => 'c0ffee', 
+                       :secret_access_key => 'beef99').should.respond_to(:allocate)
+  end
   
+  describe 'allocating an instance' do
+    before do
+      @ec2 = RubyCloud::EC2.new(:access_key_id => 'c0ffee', 
+                                :secret_access_key => 'beef99')      
+    end
+    
+    it 'should delegate arguments to the driver' do
+      @args = {:image_id => "m12131"}
+      @ec2.driver.should.receive(:run_instances).with(@args)
+      @ec2.allocate(@args)
+    end
+    
+    it 'should not handle any argument errors the driver raises' do
+      @args = {}
+      lambda { @ec2.allocate(@args) }.should.raise(AWS::ArgumentError)
+    end
+    
+    it 'should return the driver return value' do
+      instance_data = 'instance data'
+      @ec2.driver.stub!(:run_instances).and_return(instance_data)
+      @ec2.allocate(@args).should == instance_data
+    end
+  end  
 end
