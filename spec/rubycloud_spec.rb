@@ -22,15 +22,11 @@ describe RubyCloud, '.new' do
     RubyCloud::EC2.should.receive(:new).with({})  
     RubyCloud.new(:provider => 'ec2', :credentials => {})
   end
-
-  it 'should have a provider attribute' do
-    RubyCloud.new(:provider => 'ec2', :credentials => {}).should.respond_to(:provider)
-  end
   
-  it 'should set the provider attribute' do
-    ec2_instance = mock('EC2 instance')
-    RubyCloud::EC2.stub!(:new).and_return(ec2_instance)
-    RubyCloud.new(:provider => 'ec2', :credentials => {}).provider.should == ec2_instance
+  it 'should return the requested provider instance' do
+    instance = Object.new
+    RubyCloud::EC2.stub!(:new).and_return(instance)
+    RubyCloud.new(:provider => 'ec2', :credentials => {}).should == instance
   end
 
   it 'should try to instantiate any given provider' do
