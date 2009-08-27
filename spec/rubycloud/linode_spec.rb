@@ -105,10 +105,20 @@ describe RubyCloud::Linode do
       @linode.allocate
     end
     
-    it 'should return the driver create result' do
+    it 'should create a new linode instance from the driver create result' do
       create_data = 'create data'
       @linode_api.stub!(:create).and_return(create_data)
-      @linode.allocate.should == create_data
+      linode_instance = Object.new
+      RubyCloud::Linode::Instance.should.receive(:new).with(@linode, create_data).and_return(linode_instance)
+      @linode.allocate
+    end
+
+    it 'should return the newly created linode instance' do
+      create_data = 'create data'
+      @linode_api.stub!(:create).and_return(create_data)
+      linode_instance = Object.new
+      RubyCloud::Linode::Instance.stub!(:new).with(@linode, create_data).and_return(linode_instance)
+      @linode.allocate.should == linode_instance      
     end
   end
   

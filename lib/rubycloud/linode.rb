@@ -14,7 +14,7 @@ class RubyCloud::Linode
   end
   
   def allocate(args = {})
-    driver.linode.create(args)
+    RubyCloud::Linode::Instance.new(self, driver.linode.create(args))
   end
   
   def details(args = {})

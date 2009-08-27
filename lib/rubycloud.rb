@@ -18,4 +18,5 @@ end
 
 Dir['vendor/*'].each { |dir|  $:.unshift(File.join(dir, 'lib')) }
 require 'rubycloud/linode'
+require 'rubycloud/linode/instance'
 require 'rubycloud/ec2'
