@@ -10,7 +10,7 @@ class RubyCloud::Linode
   end
   
   def list(args = {})
-    driver.linode.list(args)
+    (driver.linode.list(args) || []).collect { |instance| RubyCloud::Linode::Instance.new(self, instance) }
   end
   
   def allocate(args = {})

@@ -67,10 +67,25 @@ describe RubyCloud::Linode do
       @linode.list
     end
     
-    it 'should return the driver list result' do
-      list_data = 'list data'
+    it 'should create a new linode instance from each element of the driver list results' do
+      list_data = [ '1', '2', '3' ]
       @linode_api.stub!(:list).and_return(list_data)
-      @linode.list.should == list_data
+      list_data.each do |element|
+        RubyCloud::Linode::Instance.should.receive(:new).with(@linode, element)
+      end
+      @linode.list
+    end
+    
+    it 'should return the list of linode instances created from driver list results' do
+      list_data = [ '1', '2', '3' ]
+      @linode_api.stub!(:list).and_return(list_data)
+      results = []
+      list_data.each do |element|
+        instance = Object.new
+        results << instance
+        RubyCloud::Linode::Instance.should.receive(:new).with(@linode, element).and_return(instance)
+      end
+      @linode.list.should == results
     end
   end
   
