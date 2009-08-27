@@ -1,20 +1,20 @@
 require 'linode'
 
 class RubyCloud::Linode
-  attr_reader :api_key, :provider
+  attr_reader :api_key, :driver
   
   def initialize(args)
     raise ArgumentError, ':api_key is required' unless args[:api_key]
     @api_key = args[:api_key]
-    @provider = Linode.new(:api_key => @api_key)
+    @driver = Linode.new(:api_key => @api_key)
   end
   
   def list(args = {})
-    provider.linode.list(args)
+    driver.linode.list(args)
   end
   
   def allocate(args = {})
-    provider.linode.create(args)
+    driver.linode.create(args)
   end
   
   def details(args = {})
@@ -26,24 +26,24 @@ class RubyCloud::Linode
   def start(args = {})
     raise ArgumentError, ":instance is required" unless args[:instance]
     args['LinodeID'] = args.delete(:instance)
-    provider.linode.boot(args)    
+    driver.linode.boot(args)    
   end
   
   def stop(args = {})
     raise ArgumentError, ":instance is required" unless args[:instance]
     args['LinodeID'] = args.delete(:instance)
-    provider.linode.shutdown(args)    
+    driver.linode.shutdown(args)    
   end
   
   def delete(args = {})
     raise ArgumentError, ":instance is required" unless args[:instance]
     args['LinodeID'] = args.delete(:instance)
-    provider.linode.delete(args)    
+    driver.linode.delete(args)    
   end
   
   def restart(args = {})
     raise ArgumentError, ":instance is required" unless args[:instance]
     args['LinodeID'] = args.delete(:instance)
-    provider.linode.reboot(args)    
+    driver.linode.reboot(args)    
   end
 end

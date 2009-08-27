@@ -22,12 +22,12 @@ describe RubyCloud::Linode do
       RubyCloud::Linode.new(:api_key => @api_key).api_key.should == @api_key
     end
     
-    it 'should create a provider' do
-      RubyCloud::Linode.new(:api_key => @api_key).provider.should.be.instance_of(::Linode)
+    it 'should create a driver' do
+      RubyCloud::Linode.new(:api_key => @api_key).driver.should.be.instance_of(::Linode)
     end
     
-    it 'should use the given API key for the stored provider' do
-      RubyCloud::Linode.new(:api_key => @api_key).provider.api_key.should == @api_key
+    it 'should use the given API key for the stored driver' do
+      RubyCloud::Linode.new(:api_key => @api_key).driver.api_key.should == @api_key
     end
   end
   
@@ -42,10 +42,10 @@ describe RubyCloud::Linode do
   
   describe 'listing instances' do
     before do
-      # this is done in the provider's "linode" namespace
+      # this is done in the driver's "linode" namespace
       @linode_api = Object.new
       @linode_api.stub!(:list)
-      @linode.provider.stub!(:linode).and_return(@linode_api)
+      @linode.driver.stub!(:linode).and_return(@linode_api)
       @linode_id = 5
     end
     
@@ -57,17 +57,17 @@ describe RubyCloud::Linode do
       lambda { @linode.list }.should.not.raise(ArgumentError)
     end
     
-    it 'should delegate to the stored provider' do
+    it 'should delegate to the stored driver' do
       @linode_api.should.receive(:list).with('LinodeID' => @linode_id)
       @linode.list('LinodeID' => @linode_id)
     end
     
-    it 'should pass an empty hash to the stored provider if no linode_id given' do
+    it 'should pass an empty hash to the stored driver if no linode_id given' do
       @linode_api.should.receive(:list).with({})
       @linode.list
     end
     
-    it 'should return the provider list result' do
+    it 'should return the driver list result' do
       list_data = 'list data'
       @linode_api.stub!(:list).and_return(list_data)
       @linode.list.should == list_data
@@ -80,10 +80,10 @@ describe RubyCloud::Linode do
   
   describe 'allocating an instance' do
     before do
-      # this is done in the provider's "linode" namespace
+      # this is done in the driver's "linode" namespace
       @linode_api = Object.new
       @linode_api.stub!(:create)
-      @linode.provider.stub!(:linode).and_return(@linode_api)
+      @linode.driver.stub!(:linode).and_return(@linode_api)
     end
     
     it 'should accept hash arguments' do
@@ -94,18 +94,18 @@ describe RubyCloud::Linode do
       lambda { @linode.allocate }.should.not.raise(ArgumentError)
     end
     
-    it 'should delegate to the stored provider' do
+    it 'should delegate to the stored driver' do
       args = { :a => 'bee', :c => 0x0d }
       @linode_api.should.receive(:create).with(args)
       @linode.allocate(args)
     end
     
-    it 'should pass an empty hash to the stored provider if no arguments given' do
+    it 'should pass an empty hash to the stored driver if no arguments given' do
       @linode_api.should.receive(:create).with({})
       @linode.allocate
     end
     
-    it 'should return the provider create result' do
+    it 'should return the driver create result' do
       create_data = 'create data'
       @linode_api.stub!(:create).and_return(create_data)
       @linode.allocate.should == create_data
@@ -154,10 +154,10 @@ describe RubyCloud::Linode do
   
   describe 'starting an instance' do
     before do
-      # this is done in the provider's "linode" namespace
+      # this is done in the driver's "linode" namespace
       @linode_api = Object.new
       @linode_api.stub!(:boot)
-      @linode.provider.stub!(:linode).and_return(@linode_api)
+      @linode.driver.stub!(:linode).and_return(@linode_api)
     end
     
     it 'should accept an instance ID' do
@@ -193,10 +193,10 @@ describe RubyCloud::Linode do
   
   describe 'stopping an instance' do
     before do
-      # this is done in the provider's "linode" namespace
+      # this is done in the driver's "linode" namespace
       @linode_api = Object.new
       @linode_api.stub!(:shutdown)
-      @linode.provider.stub!(:linode).and_return(@linode_api)
+      @linode.driver.stub!(:linode).and_return(@linode_api)
     end
     
     it 'should accept an instance ID' do
@@ -232,10 +232,10 @@ describe RubyCloud::Linode do
   
   describe 'deleting an instance' do
     before do
-      # this is done in the provider's "linode" namespace
+      # this is done in the driver's "linode" namespace
       @linode_api = Object.new
       @linode_api.stub!(:delete)
-      @linode.provider.stub!(:linode).and_return(@linode_api)
+      @linode.driver.stub!(:linode).and_return(@linode_api)
     end
     
     it 'should accept an instance ID' do
@@ -271,10 +271,10 @@ describe RubyCloud::Linode do
   
   describe 'restarting an instance' do
     before do
-      # this is done in the provider's "linode" namespace
+      # this is done in the driver's "linode" namespace
       @linode_api = Object.new
       @linode_api.stub!(:reboot)
-      @linode.provider.stub!(:linode).and_return(@linode_api)
+      @linode.driver.stub!(:linode).and_return(@linode_api)
     end
     
     it 'should accept an instance ID' do
